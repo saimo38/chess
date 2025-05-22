@@ -20,4 +20,10 @@ public class BoardPanel extends JPanel {
     public SquarePanel getSquare(int row, int col) {
         return squares[row][col];
     }
+
+    @Override
+    public Dimension getPreferredSize() {
+        int size = Math.min(getParent().getWidth(), getParent().getHeight());
+        return new Dimension(size, size);
+    }
 }
