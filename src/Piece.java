@@ -11,7 +11,7 @@ public abstract class Piece {
         return white;
     }
 
-    public abstract Image getImage();
+    public abstract String getSvgPath();
 
     public abstract String getType();
 }

@@ -3,8 +3,8 @@ import java.awt.*;
 
 public class Pawn extends Piece {
 
-    private final Image whiteImage = new ImageIcon("pawn_white.png").getImage();
-    private final Image blackImage = new ImageIcon("pawn_black.png").getImage();
+    //private final Image whiteImage = new ImageIcon(getClass().getResource("/images/pawn_white.png")).getImage();
+    //private final Image blackImage = new ImageIcon(getClass().getResource("/images/pawn_black.png")).getImage();
 
 
     public Pawn(boolean white) {
@@ -12,8 +12,8 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public Image getImage() {
-        return white ? whiteImage : blackImage;
+    public String getSvgPath() {
+        return white ? "/images/white_pawn.svg" : "/images/black_pawn.svg";
     }
 
     @Override
