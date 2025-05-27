@@ -1,0 +1,57 @@
+import org.apache.batik.transcoder.TranscoderInput;
+import org.apache.batik.transcoder.TranscoderOutput;
+import org.apache.batik.transcoder.image.ImageTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
+
+import java.awt.image.BufferedImage;
+import java.io.InputStream;
+
+public class SvgLoader {
+
+    public static BufferedImage loadSvg(String resourcePath, int width, int height) {
+        // Zabrání pádu při nulové velikosti
+        if (width <= 0 || height <= 0) {
+            System.err.println("Neplatné rozměry SVG: " + width + "×" + height);
+            return null;
+        }
+
+        try (InputStream inputStream = SvgLoader.class.getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                System.err.println("Soubor SVG nenalezen: " + resourcePath);
+                return null;
+            }
+
+            TranscoderInput input = new TranscoderInput(inputStream);
+            BufferedImageTranscoder transcoder = new BufferedImageTranscoder();
+
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_WIDTH, (float) width);
+            transcoder.addTranscodingHint(PNGTranscoder.KEY_HEIGHT, (float) height);
+
+            transcoder.transcode(input, null);
+
+            return transcoder.getBufferedImage();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    private static class BufferedImageTranscoder extends ImageTranscoder {
+        private BufferedImage image;
+
+        @Override
+        public BufferedImage createImage(int width, int height) {
+            return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        }
+
+        @Override
+        public void writeImage(BufferedImage img, TranscoderOutput output) {
+            this.image = img;
+        }
+
+        public BufferedImage getBufferedImage() {
+            return image;
+        }
+    }
+}

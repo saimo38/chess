@@ -25,6 +25,13 @@ public class MyFrame extends JFrame {
             }
         });
 
+        for (int i = 0; i < 8; i++){
+            board.getSquare(6,i).setPiece(new Pawn(true));
+        }
+        for (int i = 0; i < 8; i++){
+            board.getSquare(1,i).setPiece(new Pawn(false));
+        }
+
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
