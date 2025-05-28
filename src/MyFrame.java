@@ -13,7 +13,8 @@ public class MyFrame extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         JPanel containerPanel = new JPanel(null);
-        BoardPanel board = new BoardPanel();
+        Game game = new Game();
+        BoardPanel board = new BoardPanel(game);
         containerPanel.add(board);
         add(containerPanel, BorderLayout.CENTER);
         containerPanel.addComponentListener(new ComponentAdapter() {
@@ -25,15 +26,9 @@ public class MyFrame extends JFrame {
             }
         });
 
-        for (int i = 0; i < 8; i++){
-            board.getSquare(6,i).setPiece(new Pawn(true));
-        }
-        for (int i = 0; i < 8; i++){
-            board.getSquare(1,i).setPiece(new Pawn(false));
-        }
-
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+
     }
 }

@@ -1,7 +1,7 @@
-import org.apache.batik.swing.JSVGCanvas;
-
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 public class SquarePanel extends JPanel {
@@ -15,6 +15,7 @@ public class SquarePanel extends JPanel {
 
     private BufferedImage pieceImage;
     private Piece currentPiece;
+    private boolean highlighted;
 
 
     public SquarePanel(int row, int col) {
@@ -22,17 +23,18 @@ public class SquarePanel extends JPanel {
         this.col = col;
         setLayout(null);
 
-        if ((row + col) % 2 == 0) {
+        /*if ((row + col) % 2 == 0) {
             color = new Color(240, 217, 181);
             oppositeColor = new Color(181, 136, 99);
         } else {
             color = new Color(181, 136, 99);
             oppositeColor = new Color(240, 217, 181);
-        }
+        }*/
 
         if (col == 0) {
             topLeft = new JLabel(String.valueOf(8 - row));
-            topLeft.setForeground(oppositeColor);
+            //topLeft.setForeground(oppositeColor);
+            topLeft.setForeground(getColor());
             topLeft.setBounds(2, 2, 20, 20);
             add(topLeft);
         }
@@ -40,14 +42,29 @@ public class SquarePanel extends JPanel {
         if (row == 7) {
             char letter = (char) ('a' + col);
             bottomRight = new JLabel(String.valueOf(letter));
-            bottomRight.setForeground(oppositeColor);
+            //bottomRight.setForeground(oppositeColor);
+            bottomRight.setForeground(getColor());
             bottomRight.setBounds(42, 42, 20, 20);
             add(bottomRight);
         }
 
-        setBackground(color);
+        //setBackground(color);
+        setBackground(getColor());
         setPreferredSize(new Dimension(64, 64));
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                Container parent = getParent();
+                while (parent != null && !(parent instanceof BoardPanel)) {
+                    parent = parent.getParent();
+                }
+                if (parent instanceof BoardPanel board) {
+                    board.handleSquareClick(getRow(), getCol());
+                }
+            }
+        });
     }
+
 
     @Override
     public void setBounds(int x, int y, int width, int height) {
@@ -82,10 +99,10 @@ public class SquarePanel extends JPanel {
     }
 
     public void setPiece(Piece piece) {
-        this.currentPiece = piece;
+        currentPiece = piece;
 
         if (piece != null) {
-            int width = Math.max(getWidth(), 64);   // výchozí minimální velikost
+            int width = Math.max(getWidth(), 64);
             int height = Math.max(getHeight(), 64);
             pieceImage = SvgLoader.loadSvg(piece.getSvgPath(), width, height);
         } else {
@@ -100,9 +117,10 @@ public class SquarePanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g.create();
 
+        int width = getWidth();
+        int height = getHeight();
+
         if (currentPiece != null) {
-            int width = getWidth();
-            int height = getHeight();
 
             // Pokud obrázek ještě není načten nebo má jinou velikost než aktuální
             if (pieceImage == null || pieceImage.getWidth() != width || pieceImage.getHeight() != height) {
@@ -117,37 +135,31 @@ public class SquarePanel extends JPanel {
         g2d.dispose();
     }
 
-    /*public void setPiece(Piece piece) {
-        removeAll();
-        currentPiece = piece;
-
-        if (piece != null) {
-            pieceLabel = new JLabel();
-            add(pieceLabel);
-        }
-        resizeLabels();
-        revalidate();
-        repaint();
-    }*/
-
-    /*public void resizePiece(){
-        if (currentPiece != null && pieceLabel != null) {
-            int w = getWidth();
-            int h = getHeight();
-
-            if (w > 0 && h > 0) {
-                Image img = currentPiece.getImage().getScaledInstance(w, h, Image.SCALE_SMOOTH);
-                pieceLabel.setIcon(new ImageIcon(img));
-                pieceLabel.setBounds(0, 0, w, h);
-            }
-        }
-    }*/
-
     public int getRow() {
         return row;
     }
 
     public int getCol() {
         return col;
+    }
+
+    public Color getColor() {
+        if ((row + col) % 2 == 0) {
+            color = new Color(240, 217, 181);
+            return color;
+        } else {
+            oppositeColor = new Color(181, 136, 99);
+            return oppositeColor;
+        }
+    }
+
+    public void highlight(boolean value) {
+        highlighted = value;
+        setBackground(getColor());
+        if (highlighted && getColor() == color) {
+            setBackground(new Color(220, 220, 80));
+        } else if (highlighted && getColor() == oppositeColor) {
+            setBackground(new Color(200, 190, 40));
+        }
     }
 }
