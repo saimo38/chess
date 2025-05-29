@@ -16,6 +16,7 @@ public class SquarePanel extends JPanel {
     private BufferedImage pieceImage;
     private Piece currentPiece;
     private boolean highlighted;
+    private boolean legalMoveHighlighted;
 
 
     public SquarePanel(int row, int col) {
@@ -23,18 +24,17 @@ public class SquarePanel extends JPanel {
         this.col = col;
         setLayout(null);
 
-        /*if ((row + col) % 2 == 0) {
+        if ((row + col) % 2 == 0) {
             color = new Color(240, 217, 181);
             oppositeColor = new Color(181, 136, 99);
         } else {
             color = new Color(181, 136, 99);
             oppositeColor = new Color(240, 217, 181);
-        }*/
+        }
 
         if (col == 0) {
             topLeft = new JLabel(String.valueOf(8 - row));
-            //topLeft.setForeground(oppositeColor);
-            topLeft.setForeground(getColor());
+            topLeft.setForeground(oppositeColor);
             topLeft.setBounds(2, 2, 20, 20);
             add(topLeft);
         }
@@ -42,8 +42,7 @@ public class SquarePanel extends JPanel {
         if (row == 7) {
             char letter = (char) ('a' + col);
             bottomRight = new JLabel(String.valueOf(letter));
-            //bottomRight.setForeground(oppositeColor);
-            bottomRight.setForeground(getColor());
+            bottomRight.setForeground(oppositeColor);
             bottomRight.setBounds(42, 42, 20, 20);
             add(bottomRight);
         }
@@ -121,8 +120,6 @@ public class SquarePanel extends JPanel {
         int height = getHeight();
 
         if (currentPiece != null) {
-
-            // Pokud obrázek ještě není načten nebo má jinou velikost než aktuální
             if (pieceImage == null || pieceImage.getWidth() != width || pieceImage.getHeight() != height) {
                 pieceImage = SvgLoader.loadSvg(currentPiece.getSvgPath(), width, height);
             }
@@ -130,6 +127,15 @@ public class SquarePanel extends JPanel {
             if (pieceImage != null) {
                 g2d.drawImage(pieceImage, 0, 0, width, height, null);
             }
+        }
+
+        if (legalMoveHighlighted) {
+            int dotSize = Math.min(getWidth(), getHeight()) / 6;
+            int dotX = (getWidth() - dotSize) / 2;
+            int dotY = (getHeight() - dotSize) / 2;
+
+            g2d.setColor(new Color(50, 150, 50, 180));
+            g2d.fillOval(dotX, dotY, dotSize, dotSize);
         }
 
         g2d.dispose();
@@ -161,5 +167,10 @@ public class SquarePanel extends JPanel {
         } else if (highlighted && getColor() == oppositeColor) {
             setBackground(new Color(200, 190, 40));
         }
+    }
+
+    public void highlightLegal(boolean value) {
+        legalMoveHighlighted = value;
+        repaint();
     }
 }

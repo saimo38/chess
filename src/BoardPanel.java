@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class BoardPanel extends JPanel {
 
@@ -29,6 +30,7 @@ public class BoardPanel extends JPanel {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].highlight(false);
+                squares[row][col].highlightLegal(false);
             }
         }
 
@@ -49,31 +51,96 @@ public class BoardPanel extends JPanel {
 
     public void handleSquareClick(int row, int col) {
         Piece clickedPiece = game.getChessBoard().getPiece(row, col);
-        if (selectedRow == -1 && clickedPiece != null && clickedPiece.isWhite() == game.isWhiteTurn()) {
+        if (selectedRow == -1) {
+            if (clickedPiece != null && clickedPiece.isWhite() == game.isWhiteTurn()) {
+                selectedRow = row;
+                selectedCol = col;
+                squares[row][col].highlight(true);
+                ArrayList<Move> legalMoves = clickedPiece.getLegalMoves(row, col, game.getChessBoard());
+                for (Move move : legalMoves) {
+                    squares[move.getToRow()][move.getToCol()].highlightLegal(true);
+                }
+            }
+            return;
+        }
+        Piece selectedPiece = game.getChessBoard().getPiece(selectedRow, selectedCol);
+
+        if (clickedPiece != null && clickedPiece.isWhite() == selectedPiece.isWhite()) {
+            upadteBoard();
+            selectedRow = row;
+            selectedCol = col;
+            squares[row][col].highlight(true);
+            ArrayList<Move> legalMoves = clickedPiece.getLegalMoves(row, col, game.getChessBoard());
+            for (Move move : legalMoves) {
+                squares[move.getToRow()][move.getToCol()].highlightLegal(true);
+            }
+            return;
+        }
+
+        ArrayList<Move> legalMoves = selectedPiece.getLegalMoves(selectedRow, selectedCol, game.getChessBoard());
+        boolean isLegal = false;
+        for (Move move : legalMoves) {
+            if (move.getToRow() == row && move.getToCol() == col) {
+                isLegal = true;
+                break;
+            }
+        }
+
+        if (isLegal) {
+            game.getChessBoard().setPiece(row, col, selectedPiece);
+            game.getChessBoard().setPiece(selectedRow, selectedCol, null);
+            game.setLastMove(new Move(selectedRow, selectedCol, row, col));
+            game.switchTurn();
+
+        }
+
+        selectedRow = -1;
+        selectedCol = -1;
+        upadteBoard();
+    }
+
+    /*public void handleSquareClick(int row, int col) {
+        Piece clickedPiece = game.getChessBoard().getPiece(row, col);
+
+        if (selectedRow == -1) {
+            // Výběr figurky
+            if (clickedPiece != null && clickedPiece.isWhite() == game.isWhiteTurn()) {
+                selectedRow = row;
+                selectedCol = col;
+                squares[row][col].highlight(true);
+            }
+            return;
+        }
+
+        Piece selectedPiece = game.getChessBoard().getPiece(selectedRow, selectedCol);
+
+        // Pokud hráč klikne na jinou vlastní figurku
+        if (clickedPiece != null && clickedPiece.isWhite() == selectedPiece.isWhite()) {
+            // Přepne výběr na novou figurku
+            upadteBoard();  // smaže předchozí zvýraznění
             selectedRow = row;
             selectedCol = col;
             squares[row][col].highlight(true);
             return;
         }
 
-        if (selectedRow != -1) {
-            Piece selectedPiece = game.getChessBoard().getPiece(selectedRow, selectedCol);
-            Move move = new Move(row, col, selectedRow, selectedCol);
+        // Zkontroluj, jestli tah je mezi povolenými
+        ArrayList<Move> legalMoves = selectedPiece.getLegalMoves(selectedRow, selectedCol, game.getChessBoard());
+        boolean isLegal = legalMoves.stream().anyMatch(m -> m.getToRow() == row && m.getToCol() == col);
 
-            if (selectedPiece != null && (clickedPiece == null || clickedPiece.isWhite() != selectedPiece.isWhite())) {
-                game.getChessBoard().setPiece(row, col, selectedPiece);
-                game.getChessBoard().setPiece(selectedRow, selectedCol, null);
-                squares[row][col].highlight(true);
-                game.setLastMove(move);
-                game.switchTurn();
-            }
-
-            selectedRow = -1;
-            selectedCol = -1;
-            upadteBoard();
+        if (isLegal) {
+            // Proveď tah
+            game.getChessBoard().setPiece(row, col, selectedPiece);
+            game.getChessBoard().setPiece(selectedRow, selectedCol, null);
+            game.setLastMove(new Move(row, col, selectedRow, selectedCol));
+            game.switchTurn();
         }
 
-    }
+        selectedRow = -1;
+        selectedCol = -1;
+        upadteBoard();  // Aktualizace zobrazení
+    }*/
+
 
     /*public void clearHighlight(){
         for (int row = 0; row < 8; row++) {

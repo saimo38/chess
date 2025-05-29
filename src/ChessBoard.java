@@ -24,7 +24,7 @@ public class ChessBoard {
         chessBoard[7][6] = new Knight(true);
         chessBoard[7][7] = new Rook(true);
         for (int i = 0; i < 8; i++) {
-            chessBoard[6][i] = new Pawn(true);
+            //chessBoard[6][i] = new Pawn(true);
         }
 
         chessBoard[0][0] = new Rook(false);
@@ -36,7 +36,7 @@ public class ChessBoard {
         chessBoard[0][6] = new Knight(false);
         chessBoard[0][7] = new Rook(false);
         for (int i = 0; i < 8; i++) {
-            chessBoard[1][i] = new Pawn(false);
+            //chessBoard[1][i] = new Pawn(false);
         }
     }
 

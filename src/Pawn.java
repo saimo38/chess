@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
@@ -9,6 +10,11 @@ public class Pawn extends Piece {
 
     public Pawn(boolean white) {
         super(white);
+    }
+
+    @Override
+    public ArrayList<Move> getLegalMoves(int row, int col, ChessBoard board) {
+        return null;
     }
 
     @Override

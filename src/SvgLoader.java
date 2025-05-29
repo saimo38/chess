@@ -36,7 +36,6 @@ public class SvgLoader {
         }
     }
 
-
     private static class BufferedImageTranscoder extends ImageTranscoder {
         private BufferedImage image;
 
