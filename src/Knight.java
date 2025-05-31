@@ -6,6 +6,11 @@ public class Knight extends Piece {
     }
 
     @Override
+    public Piece clone() {
+        return new Knight(isWhite());
+    }
+
+    @Override
     public ArrayList<Move> getLegalMoves(int row, int col, ChessBoard board) {
         ArrayList<Move> legalMoves = new ArrayList<>();
 
@@ -17,7 +22,7 @@ public class Knight extends Piece {
 
             if (r >= 0 && r < 8 && c >= 0 && c < 8){
                 Piece p = board.getPiece(r, c);
-                if (p == null || p.isWhite() != isWhite() && !(p instanceof King)){
+                if (p == null || p.isWhite() != isWhite()){
                     legalMoves.add(new Move(row, col, r, c));
                 }
             }
@@ -29,10 +34,5 @@ public class Knight extends Piece {
     @Override
     public String getSvgPath() {
         return white ? "/images/white_knight.svg" : "/images/black_knight.svg";
-    }
-
-    @Override
-    public String getType() {
-        return "Knight";
     }
 }

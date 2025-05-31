@@ -1,4 +1,3 @@
-import java.awt.*;
 import java.util.ArrayList;
 
 public abstract class Piece {
@@ -14,7 +13,7 @@ public abstract class Piece {
 
     public abstract ArrayList<Move> getLegalMoves(int row, int col, ChessBoard board);
 
-    public abstract String getSvgPath();
+    public abstract Piece clone();
 
-    public abstract String getType();
+    public abstract String getSvgPath();
 }

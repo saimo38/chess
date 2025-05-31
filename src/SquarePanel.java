@@ -47,7 +47,6 @@ public class SquarePanel extends JPanel {
             add(bottomRight);
         }
 
-        //setBackground(color);
         setBackground(getColor());
         setPreferredSize(new Dimension(64, 64));
 

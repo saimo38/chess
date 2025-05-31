@@ -1,10 +1,13 @@
 public class ChessBoard {
     private Piece[][] chessBoard;
 
-    public ChessBoard() {
+    public ChessBoard(boolean empty) {
         chessBoard = new Piece[8][8];
-        setUpInitialPosition();
+        if (!empty) {
+            setUpInitialPosition();
+        }
     }
+
 
     public Piece getPiece(int row, int col) {
         return chessBoard[row][col];
@@ -24,7 +27,7 @@ public class ChessBoard {
         chessBoard[7][6] = new Knight(true);
         chessBoard[7][7] = new Rook(true);
         for (int i = 0; i < 8; i++) {
-            //chessBoard[6][i] = new Pawn(true);
+            chessBoard[6][i] = new Pawn(true);
         }
 
         chessBoard[0][0] = new Rook(false);
@@ -36,9 +39,23 @@ public class ChessBoard {
         chessBoard[0][6] = new Knight(false);
         chessBoard[0][7] = new Rook(false);
         for (int i = 0; i < 8; i++) {
-            //chessBoard[1][i] = new Pawn(false);
+            chessBoard[1][i] = new Pawn(false);
         }
     }
+
+    public ChessBoard copy() {
+        ChessBoard newBoard = new ChessBoard(true);
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece original = this.getPiece(row, col);
+                if (original != null) {
+                    newBoard.setPiece(row, col, original.clone());
+                }
+            }
+        }
+        return newBoard;
+    }
+
 
     public Piece[][] getBoard() {
         return chessBoard;

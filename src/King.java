@@ -6,6 +6,11 @@ public class King extends Piece {
     }
 
     @Override
+    public Piece clone() {
+        return new King(isWhite());
+    }
+
+    @Override
     public ArrayList<Move> getLegalMoves(int row, int col, ChessBoard board) {
         ArrayList<Move> legalMoves = new ArrayList<>();
 
@@ -29,10 +34,5 @@ public class King extends Piece {
     @Override
     public String getSvgPath() {
         return white ? "/images/white_king.svg" : "/images/black_king.svg";
-    }
-
-    @Override
-    public String getType() {
-        return "King";
     }
 }
