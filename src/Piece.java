@@ -2,6 +2,15 @@ import java.util.ArrayList;
 
 public abstract class Piece {
     protected boolean white;
+    protected boolean hasMoved;
+
+    public boolean isHasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
+    }
 
     public Piece(boolean white) {
         this.white = white;

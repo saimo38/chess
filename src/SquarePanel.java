@@ -17,6 +17,7 @@ public class SquarePanel extends JPanel {
     private Piece currentPiece;
     private boolean highlighted;
     private boolean legalMoveHighlighted;
+    private boolean checkHighlighted;
 
 
     public SquarePanel(int row, int col) {
@@ -167,6 +168,17 @@ public class SquarePanel extends JPanel {
             setBackground(new Color(200, 190, 40));
         }
     }
+
+    public void highlightKingCheck(boolean value) {
+        checkHighlighted = value;
+        if (checkHighlighted) {
+            setBackground(Color.red);
+        } else {
+            setBackground(getColor());
+        }
+        repaint();
+    }
+
 
     public void highlightLegal(boolean value) {
         legalMoveHighlighted = value;

@@ -9,15 +9,14 @@ import java.io.InputStream;
 public class SvgLoader {
 
     public static BufferedImage loadSvg(String resourcePath, int width, int height) {
-        // Zabrání pádu při nulové velikosti
         if (width <= 0 || height <= 0) {
-            System.err.println("Neplatné rozměry SVG: " + width + "×" + height);
+            System.err.println("Invalid SVG dimensions: " + width + "×" + height);
             return null;
         }
 
         try (InputStream inputStream = SvgLoader.class.getResourceAsStream(resourcePath)) {
             if (inputStream == null) {
-                System.err.println("Soubor SVG nenalezen: " + resourcePath);
+                System.err.println("SVG file not found: " + resourcePath);
                 return null;
             }
 

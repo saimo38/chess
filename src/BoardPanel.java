@@ -31,6 +31,7 @@ public class BoardPanel extends JPanel {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].highlight(false);
                 squares[row][col].highlightLegal(false);
+                squares[row][col].highlightKingCheck(false);
             }
         }
 
@@ -46,6 +47,32 @@ public class BoardPanel extends JPanel {
             }
         }
 
+        boolean whiteInCheck = game.isKingInCheck(true, game.getChessBoard());
+        boolean blackInCheck = game.isKingInCheck(false, game.getChessBoard());
+
+        if (whiteInCheck) {
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                    Piece p = board[r][c];
+                    if (p instanceof King && p.isWhite()) {
+                        squares[r][c].highlightKingCheck(true);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (blackInCheck) {
+            for (int r = 0; r < 8; r++) {
+                for (int c = 0; c < 8; c++) {
+                    Piece p = board[r][c];
+                    if (p instanceof King && !p.isWhite()) {
+                        squares[r][c].highlightKingCheck(true);
+                        break;
+                    }
+                }
+            }
+        }
         repaint();
     }
 
@@ -91,13 +118,72 @@ public class BoardPanel extends JPanel {
         }
 
         if (isLegal) {
+            Move actualMove = null;
+            for (Move move : legalMoves) {
+                if (move.getToRow() == row && move.getToCol() == col) {
+                    actualMove = move;
+                    break;
+                }
+            }
+
             game.getChessBoard().setPiece(row, col, selectedPiece);
             game.getChessBoard().setPiece(selectedRow, selectedCol, null);
-            game.setLastMove(new Move(selectedRow, selectedCol, row, col));
+
+            if (actualMove != null) {
+                if (actualMove.isCastleKingSide()) {
+                    game.getChessBoard().setPiece(row, col, selectedPiece);
+                    game.getChessBoard().setPiece(selectedRow, selectedCol, null);
+
+                    Piece rook = game.getChessBoard().getPiece(selectedRow, 7);
+                    game.getChessBoard().setPiece(selectedRow, 5, rook);
+                    game.getChessBoard().setPiece(selectedRow, 7, null);
+
+                    selectedPiece.setHasMoved(true);
+                    rook.setHasMoved(true);
+
+                } else if (actualMove.isCastleQueenSide()) {
+                    game.getChessBoard().setPiece(row, col, selectedPiece);
+                    game.getChessBoard().setPiece(selectedRow, selectedCol, null);
+
+                    Piece rook = game.getChessBoard().getPiece(selectedRow, 0);
+                    game.getChessBoard().setPiece(selectedRow, 3, rook);
+                    game.getChessBoard().setPiece(selectedRow, 0, null);
+
+                    selectedPiece.setHasMoved(true);
+                    rook.setHasMoved(true);
+
+                } else {
+                    game.getChessBoard().setPiece(row, col, selectedPiece);
+                    game.getChessBoard().setPiece(selectedRow, selectedCol, null);
+
+                    if (actualMove.isEnPassant()) {
+                        int direction = selectedPiece.isWhite() ? 1 : -1;
+                        game.getChessBoard().setPiece(row + direction, col, null);
+                    }
+                }
+            }
+
+            if (selectedPiece instanceof Pawn) {
+                if ((selectedPiece.isWhite() && row == 0) || (!selectedPiece.isWhite() && row == 7)) {
+                    String[] options = {"Queen", "Rook", "Bishop", "Knight"};
+                    int choice = JOptionPane.showOptionDialog(null, "Promote to:", "Promotion", JOptionPane.DEFAULT_OPTION,
+                            JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+                    Piece newPiece = switch (choice) {
+                        case 1 -> new Rook(selectedPiece.isWhite());
+                        case 2 -> new Bishop(selectedPiece.isWhite());
+                        case 3 -> new Knight(selectedPiece.isWhite());
+                        default -> new Queen(selectedPiece.isWhite());
+                    };
+
+                    game.getChessBoard().setPiece(row, col, newPiece);
+                }
+            }
+
+            game.setLastMove(actualMove);
             game.switchTurn();
             game.checkEndConditions();
 
-            if (game.isGameOver()){
+            if (game.isGameOver()) {
                 upadteBoard();
                 JOptionPane.showMessageDialog(null, game.getResultMessage(), "Game Over", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -108,6 +194,7 @@ public class BoardPanel extends JPanel {
         selectedCol = -1;
         upadteBoard();
     }
+
     public void setGame(Game game) {
         this.game = game;
     }

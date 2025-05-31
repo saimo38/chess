@@ -1,5 +1,6 @@
 public class ChessBoard {
     private Piece[][] chessBoard;
+    private Game game;
 
     public ChessBoard(boolean empty) {
         chessBoard = new Piece[8][8];
@@ -8,6 +9,13 @@ public class ChessBoard {
         }
     }
 
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
 
     public Piece getPiece(int row, int col) {
         return chessBoard[row][col];
@@ -53,6 +61,7 @@ public class ChessBoard {
                 }
             }
         }
+        newBoard.setGame(this.getGame());
         return newBoard;
     }
 

@@ -2,10 +2,6 @@ import java.util.ArrayList;
 
 public class Pawn extends Piece {
 
-    //private final Image whiteImage = new ImageIcon(getClass().getResource("/images/pawn_white.png")).getImage();
-    //private final Image blackImage = new ImageIcon(getClass().getResource("/images/pawn_black.png")).getImage();
-
-
     public Pawn(boolean white) {
         super(white);
     }
@@ -31,23 +27,40 @@ public class Pawn extends Piece {
             }
         }
 
-        int rightCol = col + 1;
-        if (oneStepRow >= 0 && oneStepRow < 8 && rightCol < 8) {
-            Piece p = board.getPiece(oneStepRow, rightCol);
-            if(p != null && p.isWhite() != isWhite()) {
-                legalMoves.add(new Move(row, col, oneStepRow, rightCol));
-            }
-        }
+        for (int dCol : new int[]{-1, 1}) {
+            int targetCol = col + dCol;
+            if (isValidSquare(oneStepRow, targetCol)) {
+                Piece targetPiece = board.getPiece(oneStepRow, targetCol);
 
-        int leftCol = col - 1;
-        if (oneStepRow >= 0 && oneStepRow < 8 && leftCol >= 0) {
-            Piece p = board.getPiece(oneStepRow, leftCol);
-            if(p != null && p.isWhite() != isWhite()) {
-                legalMoves.add(new Move(row, col, oneStepRow, leftCol));
+                if (targetPiece != null && targetPiece.isWhite() != isWhite()) {
+                    legalMoves.add(new Move(row, col, oneStepRow, targetCol));
+                }
+
+                Move lastMove = board.getGame().getLastMove();
+                if (lastMove != null) {
+                    int fromRow = lastMove.getFromRow();
+                    int toRow = lastMove.getToRow();
+                    int toCol = lastMove.getToCol();
+
+                    Piece movedPiece = board.getPiece(toRow, toCol);
+                    if (movedPiece instanceof Pawn
+                            && movedPiece.isWhite() != isWhite()
+                            && Math.abs(toRow - fromRow) == 2
+                            && toRow == row
+                            && toCol == targetCol) {
+                        Move enPassantMove = new Move(row, col, oneStepRow, targetCol);
+                        enPassantMove.setEnPassant(true);
+                        legalMoves.add(enPassantMove);
+                    }
+                }
             }
         }
 
         return legalMoves;
+    }
+
+    private boolean isValidSquare(int row, int col) {
+        return row >= 0 && row < 8 && col >= 0 && col < 8;
     }
 
     @Override

@@ -6,6 +6,7 @@ public class Game {
     private Move lastMove;
     private boolean gameOver = false;
     private String resultMessage = "";
+    private int moveCount = 0;
 
     public boolean isKingInCheck(boolean white, ChessBoard board) {
         int kingRow = -1, kingCol = -1;
@@ -87,6 +88,23 @@ public class Game {
         }
     }
 
+    public boolean isSquareAttacked(int row, int col, boolean byWhite, ChessBoard board) {
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                Piece p = board.getPiece(r, c);
+                if (p != null && p.isWhite() == byWhite) {
+                    for (Move m : p.getLegalMoves(r, c, board)) {
+                        if (m.getToRow() == row && m.getToCol() == col) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
     public String getResultMessage() {
         return resultMessage;
     }
@@ -97,6 +115,7 @@ public class Game {
 
     public Game(){
         chessBoard = new ChessBoard(false);
+        chessBoard.setGame(this);
         whiteTurn = true;
     }
 
@@ -118,5 +137,10 @@ public class Game {
 
     public void switchTurn(){
         whiteTurn = !whiteTurn;
+        moveCount++;
+    }
+
+    public int getMoveCount() {
+        return moveCount;
     }
 }
